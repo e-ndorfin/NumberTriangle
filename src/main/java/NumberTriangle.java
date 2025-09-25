@@ -51,7 +51,6 @@ public class NumberTriangle {
         return root;
     }
 
-
     /**
      * [not for credit]
      * Set the root of this NumberTriangle to be the max path sum
@@ -88,8 +87,15 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
-        return -1;
+        NumberTriangle curr = this;
+        for (int i = 0; i < path.length(); i++){
+            if (path.charAt(i) == 'l') {
+                curr = curr.left;
+            } else {
+                curr = curr.right;
+            }   
+        }
+        return curr.getRoot();
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -109,9 +115,8 @@ public class NumberTriangle {
         InputStream inputStream = NumberTriangle.class.getClassLoader().getResourceAsStream(fname);
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-
-        // TODO define any variables that you want to use to store things
-
+        NumberTriangle[] currentRow = new NumberTriangle[1];
+        int lineNum = 0;
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
         NumberTriangle top = null;
@@ -119,10 +124,30 @@ public class NumberTriangle {
         String line = br.readLine();
         while (line != null) {
 
-            // remove when done; this line is included so running starter code prints the contents of the file
-            System.out.println(line);
+            String[] numbers = line.split(" ");
 
-            // TODO process the line
+            if (lineNum == 0){
+                int val = Integer.parseInt(numbers[0]);
+                top = new NumberTriangle(val);
+                currentRow[0] = top;
+            } else {
+                // Create all nodes for the current row first
+                NumberTriangle[] newRow = new NumberTriangle[numbers.length];
+                for (int i = 0; i < numbers.length; i++) {
+                    newRow[i] = new NumberTriangle(Integer.parseInt(numbers[i]));
+                }
+
+                // Connect each node in previous row to its left and right children
+                for (int i = 0; i < currentRow.length; i++) {
+                    currentRow[i].setLeft(newRow[i]);
+                    currentRow[i].setRight(newRow[i + 1]);
+                }
+
+                // Update currentRow to the new row
+                currentRow = newRow;
+            }
+
+            lineNum++;
 
             //read the next line
             line = br.readLine();
